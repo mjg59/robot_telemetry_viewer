@@ -31,8 +31,6 @@ def resync():
 # serial, write out to a local file as well.
 def data_read(length=None):
     if from_file == None:
-        if ser == None:
-            ser = serial.Serial("/dev/ttyUSB0", 115200)
         if length == None:
             data = ser.read()
             output.write(data)
@@ -75,6 +73,7 @@ def parse_vesc(vesc, data):
 if len(sys.argv) > 1:
     from_file = open(sys.argv[1], "rb")
 else:
+    ser = serial.Serial("/dev/ttyUSB0", 115200)
     output = open("telemetry.%d" % int(time.time()), "wb")
 
 print(term.on_black + term.home + term.clear, end='')
