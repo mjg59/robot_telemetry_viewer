@@ -1,2 +1,3 @@
+blessed
 pyserial
 git+https://github.com/LiamBindle/PyVESC
