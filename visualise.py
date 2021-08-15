@@ -16,7 +16,7 @@ dumpmode = None
 
 parameters = [[{'name': "temp_fet", 'warn': 80, 'critical': 100}],
               [{'name': "temp_fet", 'warn': 80, 'critical': 100}],
-              [{'name': "temp_fet", 'warn': 80, 'critical': 100},
+              [{'name': "temp_fet", 'display': "FET temp", 'warn': 80, 'critical': 100},
                {'name': "v_in", 'low_warn': 20, 'low_critical': 8}],
               [{'name': "temp_fet", 'warn': 80, 'critical': 100}]]
 
@@ -73,6 +73,9 @@ def parse_vesc(timestamp, vesc, data):
     for parm in parameters[vesc]:
         print (term.move_x(term.width * vesc // 4), end='')
         if parm['name'] != "":
+            name = parm['name']
+            if 'display' in parm.keys():
+                name = parm['display']
             value = getattr(msg, parm['name'])
             if ('critical' in parm.keys() and value > parm['critical']) or \
                ('low_critical' in parm.keys() and value < parm['low_critical']):
@@ -82,7 +85,7 @@ def parse_vesc(timestamp, vesc, data):
                 print(term.orange_on_black, end='')
             else:
                 print(term.green_on_black, end='')
-            print(parm['name'], value, end='')
+            print(name, value, end='')
         print(term.normal)
     fault = int.from_bytes(getattr(msg, 'mc_fault_code'), "little")
     if fault != 0:
