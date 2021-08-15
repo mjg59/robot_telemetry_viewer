@@ -53,6 +53,10 @@ def parse_accel(data):
 # separator, so ignore them.
 def parse_vesc(vesc, data):
     msg, consumed = pyvesc.decode(data[0:-4])
+    # If there's any corruption, the CRC check will fail and pyvesc will return
+    # None. Return and let the main loop resynchronise.
+    if msg == None:
+        return
     print(term.home, end='')
     print (term.move_y(2), end='')
     for parm in parameters[vesc]:
