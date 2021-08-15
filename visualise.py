@@ -84,6 +84,9 @@ def parse_vesc(timestamp, vesc, data):
                 print(term.green_on_black, end='')
             print(parm['name'], value, end='')
         print(term.normal)
+    fault = int.from_bytes(getattr(msg, 'mc_fault_code'), "little")
+    if fault != 0:
+        print(term.red_on_black + '\nFAULT: %d' % fault, end='')
 
 if len(sys.argv) > 1:
     arg = sys.argv[1]
