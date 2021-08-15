@@ -71,7 +71,13 @@ def parse_vesc(timestamp, vesc, data):
     print(term.home, end='')
     print (term.move_y(2), end='')
     for parm in parameters[vesc]:
-        print (term.move_x(term.width * vesc // 4), end='')
+        fieldstart = term.width * vesc // 4
+        fieldlen = term.width // 4
+        field = ' ' * fieldlen
+        print (term.move_x(fieldstart), end='')
+        print (term.black_on_black, end='')
+        print (field, end='')
+        print (term.move_x(fieldstart), end='')
         if parm['name'] != "":
             name = parm['name']
             if 'display' in parm.keys():
