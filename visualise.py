@@ -15,7 +15,8 @@ term = Terminal()
 dumpmode = None
 last_update = 0
 
-parameters = [[{'name': "temp_fet", 'warn': 80, 'critical': 100}],
+parameters = [[{'name': "temp_fet"},
+               {'name': "avg_input_current", 'display': "Current"}],
               [{'name': "temp_fet", 'warn': 80, 'critical': 100}],
               [{'name': "temp_fet", 'display': "FET temp", 'warn': 80, 'critical': 100},
                {'name': "v_in", 'low_warn': 20, 'low_critical': 8}],
@@ -53,6 +54,22 @@ def parse_accel(timestamp, data):
     if dumpmode == "accel":
         output.write("%d, %f, %f, %f\n" % (timestamp, x/10, y/10, z/10))
 
+def temp_limits(msg):
+    temp = getattr(msg, 'temp_fet')
+    current = getattr(msg, 'avg_input_current')
+    if current > 100:
+        return (20, 30, None, None)
+    return (30, 40, None, None)
+
+def get_limits(parameter, msg):
+    if 'callback' in parameter.keys():
+        return parameter['callback'](msg)
+    warn = parameter['warn'] if 'warn' in parameter.keys() else None
+    critical = parameter['critical'] if 'critical' in parameter.keys() else None
+    low_warn = parameter['low_warn'] if 'low_warn' in parameter.keys() else None
+    low_critical = parameter['low_critical'] if 'low_critical' in parameter.keys() else None
+    return (warn, critical, low_warn, low_critical)
+
 # Parsing of VESC data is done with pyvesc. Last 4 bytes of the data are the
 # separator, so ignore them.
 def parse_vesc(timestamp, vesc, data):
@@ -84,11 +101,12 @@ def parse_vesc(timestamp, vesc, data):
             if 'display' in parm.keys():
                 name = parm['display']
             value = getattr(msg, parm['name'])
-            if ('critical' in parm.keys() and value > parm['critical']) or \
-               ('low_critical' in parm.keys() and value < parm['low_critical']):
+            (warn, critical, low_warn, low_critical) = get_limits(parm, msg)
+            if (critical != None and value >= critical) or \
+               (low_critical != None and value <= low_critical):
                 print(term.red_on_black, end='')
-            elif ('warn' in parm.keys() and value > parm['warn']) or \
-                 ('low_warn' in parm.keys() and value < parm['low_warn']):
+            elif (warn != None and value >= warn) or \
+                 (low_warn != None and value <= low_warn):
                 print(term.orange_on_black, end='')
             else:
                 print(term.green_on_black, end='')
@@ -141,6 +159,11 @@ if len(sys.argv) > 1:
 else:
     ser = serial.Serial("/dev/ttyUSB0", 115200)
     output = open("telemetry.%d" % int(time.time()), "wb")
+
+for vesc in parameters:
+    for param in vesc:
+        if param['name'] == "temp_fet":
+            param['callback'] = temp_limits
 
 while True:
     if int(time.time()) - last_update > 1:
