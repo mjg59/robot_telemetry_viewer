@@ -154,6 +154,13 @@ if len(sys.argv) > 1:
         dumpmode = sys.argv[2];
         from_file = open(sys.argv[3], "rb")
         output = open(sys.argv[4], "w")
+    elif arg == "bridge":
+        if len(sys.argv) != 3:
+            print("Usage: bridge vesc")
+            exit()
+        vesc = sys.argv[2];
+        ser = serial.Serial("/dev/ttyUSB0", 115200, timeout=1)
+        ser.write(b'\r\r\rb\r' + vesc + b'\r')
     else:
         from_file = open(sys.argv[1], "rb")
 else:
