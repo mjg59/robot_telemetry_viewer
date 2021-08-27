@@ -79,7 +79,7 @@ def parse_vesc(timestamp, vesc, data):
     if msg == None:
         return
     if dumpmode == "all":
-        for parameter in ['temp_mos1', 'temp_mos2', 'temp_mos3', 'temp_mos4', 'temp_mos5', 'temp_mos6', 'temp_pcb', 'current_motor', 'current_in', 'duty_now', 'rpm', 'v_in', 'amp_hours', 'amp_hours_charged', 'watt_hours', 'watt_hours_charged', 'tachometer', 'tachometer_abs', 'mc_fault_code']:
+        for parameter in ['temp_fet', 'temp_motor', 'avg_motor_current', 'avg_input_current', 'avg_id', 'avg_iq', 'duty_cycle_now', 'rpm', 'v_in', 'amp_hours', 'amp_hours_charged', 'watt_hours', 'watt_hours_charged', 'tachometer', 'tachometer_abs', 'mc_fault_code', 'pid_pos_now', 'app_controller_id', 'time_ms']:
             try:
                 value = getattr(msg, parameter)
                 if value != None:
