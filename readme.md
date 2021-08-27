@@ -43,3 +43,5 @@ and an output filename. It will write a CSV to the output containing the
 relevant parameter from each VESC packet, in the format:
 
 timestamp,vesc,parameter,value
+
+If the parameter is "all", all data will be dumped.

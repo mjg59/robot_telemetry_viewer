@@ -78,7 +78,16 @@ def parse_vesc(timestamp, vesc, data):
     # None. Return and let the main loop resynchronise.
     if msg == None:
         return
-    if dumpmode != None:
+    if dumpmode == "all":
+        for parameter in ['temp_mos1', 'temp_mos2', 'temp_mos3', 'temp_mos4', 'temp_mos5', 'temp_mos6', 'temp_pcb', 'current_motor', 'current_in', 'duty_now', 'rpm', 'v_in', 'amp_hours', 'amp_hours_charged', 'watt_hours', 'watt_hours_charged', 'tachometer', 'tachometer_abs', 'mc_fault_code']:
+            try:
+                value = getattr(msg, parameter)
+                if value != None:
+                    output.write("%d, %d, %s, %f\n" % (timestamp, vesc, parameter, value))
+            except AttributeError:
+                pass
+            return
+    if dumpmode != None:        
         try:
             value = getattr(msg, dumpmode)
             if value != None:
