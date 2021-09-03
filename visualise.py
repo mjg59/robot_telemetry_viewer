@@ -79,14 +79,16 @@ def parse_vesc(timestamp, vesc, data):
     if msg == None:
         return
     if dumpmode == "all":
-        for parameter in ['temp_fet', 'temp_motor', 'avg_motor_current', 'avg_input_current', 'avg_id', 'avg_iq', 'duty_cycle_now', 'rpm', 'v_in', 'amp_hours', 'amp_hours_charged', 'watt_hours', 'watt_hours_charged', 'tachometer', 'tachometer_abs', 'mc_fault_code', 'pid_pos_now', 'app_controller_id', 'time_ms']:
+        for parameter in ('temp_fet', 'temp_motor', 'avg_motor_current', 'avg_input_current', 'avg_id', 'avg_iq', 'duty_cycle_now', 'rpm', 'v_in', 'amp_hours', 'amp_hours_charged', 'watt_hours', 'watt_hours_charged', 'tachometer', 'tachometer_abs', 'mc_fault_code', 'pid_pos_now', 'app_controller_id', 'time_ms'):
             try:
                 value = getattr(msg, parameter)
                 if value != None:
+                    if isinstance(value, bytes):
+                        value = int.frombytes(value, "little")
                     output.write("%d, %d, %s, %f\n" % (timestamp, vesc, parameter, value))
             except AttributeError:
                 pass
-            return
+        return
     if dumpmode != None:        
         try:
             value = getattr(msg, dumpmode)
