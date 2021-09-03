@@ -84,7 +84,7 @@ def parse_vesc(timestamp, vesc, data):
                 value = getattr(msg, parameter)
                 if value != None:
                     if isinstance(value, bytes):
-                        value = int.frombytes(value, "little")
+                        value = int.from_bytes(value, "little")
                     output.write("%d, %d, %s, %f\n" % (timestamp, vesc, parameter, value))
             except AttributeError:
                 pass
